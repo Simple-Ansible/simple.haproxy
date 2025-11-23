@@ -63,7 +63,7 @@ Basic usage is:
   roles:
     - role: simple.haproxy
   tags:
-    - haproxi      
+    - haproxy
 ```
 
 ## ⚙ Role Variables
