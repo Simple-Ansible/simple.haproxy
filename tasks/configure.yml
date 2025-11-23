@@ -1,0 +1,59 @@
+---
+
+- name: Déployer le dossier local des pages d'erreurs HAProxy
+  ansible.builtin.copy:
+    src: "{{ haproxy_errors_local_dir }}/"
+    dest: /etc/haproxy/errors/
+    owner: root
+    group: root
+    mode: '0755'
+    directory_mode: '0755'
+    remote_src: false
+  diff: true
+  notify:
+    - test haproxy configuration
+    - reload haproxy
+  when: haproxy_errors_local_dir is defined and haproxy_errors_local_dir | length > 0
+
+- name: Déployer le dossier local des certificats SSL HAProxy
+  ansible.builtin.copy:
+    src: "{{ haproxy_ssl_local_dir }}/"
+    dest: /etc/haproxy/ssl/
+    owner: root
+    group: root
+    mode: '0700'
+    directory_mode: '0755'
+    remote_src: false
+  notify:
+    - test haproxy configuration
+    - reload haproxy
+  when: (haproxy_ssl_local_dir | default('')) != ''
+
+- name: Déployer le dossier local des includes HAProxy
+  ansible.builtin.copy:
+    src: "{{ haproxy_includes_local_dir }}/"
+    dest: /etc/haproxy/includes/
+    owner: root
+    group: root
+    mode: '0755'
+    directory_mode: '0755'
+    remote_src: false
+  notify:
+    - test haproxy configuration
+    - reload haproxy
+  when: (haproxy_includes_local_dir | default('')) != ''
+
+- name: Déployer la configuration HAProxy
+  ansible.builtin.template:
+    src: "{{ haproxy_cfg_template }}"
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: '0755'
+  diff: true
+  notify:
+    - test haproxy configuration
+    - reload haproxy
+  when: haproxy_cfg_template is defined and haproxy_errors_local_dir | length > 0
+
+...

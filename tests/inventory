@@ -1,0 +1,2 @@
+[all]
+YOUR-HOST ansible_host=YOUR-HOST.com ansible_user=root

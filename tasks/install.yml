@@ -1,0 +1,52 @@
+---
+- name: Télécharger la clé GPG du dépôt HAProxy
+  ansible.builtin.get_url:
+    url: "https://haproxy.debian.net/bernat.debian.org.gpg"
+    dest: /usr/share/keyrings/haproxy-archive-keyring.gpg
+    mode: '0644'
+  check_mode: false
+  when: ansible_os_family == "Debian" and haproxy_official_repo
+
+- name: Ajouter le dépôt officiel HAProxy Debian
+  ansible.builtin.deb822_repository:
+    name: haproxy
+    state: present
+    uris:
+      - "http://haproxy.debian.net"
+    suites:
+      - "{{ ansible_distribution_release }}-backports-{{ haproxy_version }}"
+    components:
+      - main
+    signed_by: /usr/share/keyrings/haproxy-archive-keyring.gpg
+  register: haproxy_output_deb822_add
+  when: ansible_os_family == "Debian" and haproxy_official_repo
+  notify:
+    - Update APT cache
+
+- name: Créer un fichier APT preferences pour privilégier HAProxy
+  ansible.builtin.copy:
+    dest: /etc/apt/preferences.d/haproxy
+    content: |
+      Package: haproxy
+      Pin: origin haproxy.debian.net
+      Pin-Priority: 1001
+    owner: root
+    group: root
+    mode: '0644'
+  when: ansible_os_family == "Debian" and haproxy_official_repo
+
+- name: Installer HAProxy
+  ansible.builtin.package:
+    name: haproxy
+    state: present
+
+- name: Activer et démarrer le service HAProxy
+  ansible.builtin.service:
+    name: haproxy
+    enabled: true
+    state: started
+  notify:
+    - Test haproxy configuration
+    - Reload haproxy
+  when: not ansible_check_mode
+...

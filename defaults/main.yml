@@ -1,0 +1,8 @@
+---
+# defaults file for simple.haproxy
+
+haproxy_official_repo: false
+haproxy_version: 3.2 # latest LTS (2030-Q2) /!\ Only When haproxy_official_repo = true /!\
+haproxy_cfg_template: ""
+haproxy_errors_local_dir: ""
+haproxy_ssl_local_dir: ""
