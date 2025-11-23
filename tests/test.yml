@@ -1,0 +1,5 @@
+---
+- name: Exemple Playbook
+  hosts: all
+  roles:
+    - role: git/simple.haproxy

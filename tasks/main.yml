@@ -1,0 +1,14 @@
+---
+# tasks file for simple.haproxy
+
+- name: Installation
+  ansible.builtin.import_tasks: install.yml
+  tags:
+    - haproxy-install
+    - simple-haproxy
+
+- name: Configurations
+  ansible.builtin.import_tasks: configure.yml
+  tags:
+    - haproxy-config
+    - simple-haproxy

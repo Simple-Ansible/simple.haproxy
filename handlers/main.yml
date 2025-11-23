@@ -1,0 +1,24 @@
+---
+# handlers file for simple.haproxy
+
+- name: Update APT cache
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Restart haproxy
+  ansible.builtin.systemd:
+    name: haproxy
+    state: restarted
+    enabled: true
+
+- name: Reload haproxy
+  ansible.builtin.systemd:
+    name: haproxy
+    state: reloaded
+    enabled: true
+
+- name: Test haproxy configuration
+  ansible.builtin.command: haproxy -c -f /etc/haproxy/haproxy.cfg
+  register: haproxy_test
+  changed_when: false   # Cette tâche ne modifie rien
+  failed_when: haproxy_test.rc != 0
